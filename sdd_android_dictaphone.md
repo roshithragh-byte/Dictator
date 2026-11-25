@@ -3,7 +3,7 @@
 > **Recommended Path (For Future Chats & Sessions):**
 > 1. **Methodology:** Follow **Agile (1-Week Vertical Slices) + Spec-Driven Development (SDD)**. Ship and test a working APK on a physical Android phone at the end of every sprint before starting the next.
 > 2. **v1 Core Wedge First:** Build **Floating Hold/Lock Bubble (`120 ms` hold, `8dp` drag, Slide-Up to Lock) -> Offline `whisper.cpp` `.txt` Watcher -> Built-in Text Editor + Auto-Copy -> Local Gemini Nano Transforms -> Minimal 2-Tool `AppFunctions` -> `PrintManager` PDF & Share Sheet**. Keep Workspace OAuth, Places SDK, and `.docx` deferred to **v1.1**.
-> 3. **Current Checkpoint:** **Sprint 1 code is generated (`FieldFlow_Sprint1_Full.zip`)**. Verify Sprint 1 on a physical Android device first, then proceed to **Sprint 2 (`Silero VAD` + `whisper.cpp` + `.txt` Watcher)**.
+> 3. **Current Checkpoint:** Historical planning checkpoint. See [Implementation Baseline Addendum](#10-implementation-baseline-addendum-2026-11-26) and `docs/IMPLEMENTATION_STATUS.md` for the reviewed repository status.
 
 **Target Platform:** Android (API 30+ / Android 11+, with Android 14+ foreground microphone & Android 16+ AppFunctions support)  
 **Design Inspiration:** Handheld dictaphone ergonomics (inspired by the [Sony ICD-SX712 / XJS 5000](https://www.homebrewaudio.com/11787/the-xjs-5000-dictaphone-from-suits/)) reimagined as an **always-accessible Android floating overlay button** that works over any app or home screen, paired with an automatic audio-to-text file watcher, built-in text editor, on-device Gemini Nano, **Android AppFunctions**, printing, and sharing.  
@@ -218,3 +218,48 @@ class FieldFlowAppFunctions(
 - [ ] **S4-2:** Implement `FileProvider` Share Sheet (`Intent.ACTION_SEND`) for `.txt`, `.md`, and `.pdf` (to Gmail, Drive, Docs, Keep, WhatsApp) + `geo:` Maps intent helper.
 - [ ] **S4-3:** Add Quick Settings Tile to toggle the floating bubble on/off.
 - [ ] **S4-4:** Execute full Test Matrix (Unit + Integration + 30-min physical device field QA).
+
+
+---
+
+## 10. Implementation Baseline Addendum (2026-11-26)
+
+This addendum supersedes the historical sprint checkpoint above for repository-status purposes. The original sections remain the product intent and design baseline; they must not be interpreted as proof that every requirement is implemented or verified.
+
+**Reviewed repository snapshot:** `main` at `e2517adda8203d5a24b2e1b9c48465ee9d44fab3`.  
+**Review method:** Static source inspection. No Gradle build, emulator run, physical-device test, benchmark, or native inference run was performed for this documentation update.
+
+The repository now contains source modules for overlay, audio capture, VAD, Whisper JNI, WorkManager transcription, transcript file writing, Room/FTS, Gemini Nano transforms, AppFunctions, export/print/share, and Quick Settings tile. Refer to `docs/IMPLEMENTATION_STATUS.md` for the source-evidence matrix.
+
+### 10.1 Critical implementation clarifications
+
+1. **Whisper JNI may be a stub.** `core/stt/src/main/cpp/CMakeLists.txt` builds a stub when the Whisper source tree is absent. The stub JNI implementation returns placeholder text. A release build must fail if real Whisper is not linked.
+2. **Model assets are external prerequisites.** The worker expects `filesDir/models/silero_vad.onnx` and `filesDir/models/ggml-base.en-q5_1.bin`. The reviewed repository does not contain these assets or a complete provisioning manager.
+3. **Two recording paths exist.** The overlay uses AudioRecord + WorkManager/VAD/Whisper. The in-app editor uses Android SpeechRecognizer with an AudioRecord-backed M4A capture. These paths have distinct transcription and persistence semantics; see ADR-0002.
+4. **Build configuration is machine-specific.** App and AppFunctions Gradle files reference an absolute Android SDK 36.1 JAR path under `/home/machinerg/`. Replace this with a portable and CI-verifiable configuration.
+5. **Recovery is not established.** The current source does not persist a complete recording-session journal before capture. WorkManager persistence does not by itself recover a recording that was not finalized and enqueued.
+6. **Worker terminal states need correction.** Missing model assets and empty decode/segment paths can currently return success or placeholder output. A recording must not become `TRANSCRIBED` unless genuine transcript content is durably committed.
+7. **Room schema evolution is not release-ready.** Database version is 1 and schema export is disabled. Explicit migrations and schema verification are required.
+8. **AppFunctions returns transcript text.** Authorization by the platform binding permission does not replace product-level data minimization, user enablement, result limits, redaction and audit policy.
+9. **Backup is disabled.** The manifest sets `allowBackup=false`; no app-level backup/restore flow was found.
+
+### 10.2 Documentation source of truth
+
+The production technical documentation is maintained under `docs/`:
+
+- `docs/IMPLEMENTATION_STATUS.md`
+- `docs/architecture/system-architecture.md`
+- `docs/architecture/runtime-flows.md`
+- `docs/data/data-model.md`
+- `docs/security/security-privacy.md`
+- `docs/engineering/build-release.md`
+- `docs/quality/test-strategy.md`
+- `docs/operations/operations-recovery.md`
+- `docs/adr/`
+
+The original sprint backlog is retained as historical planning context. Its checkbox state is not a current implementation-status ledger.
+
+### 10.3 Production-readiness rule
+
+A source implementation is not considered verified until there is reproducible evidence on the target Android version/device class. In particular, physical-device validation is required for microphone foreground-service behavior, overlay interaction, audio codec integrity, actual native Whisper inference, Gemini Nano availability, AppFunctions discovery/invocation, printing and sharing.
+
