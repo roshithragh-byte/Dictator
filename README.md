@@ -1,6 +1,6 @@
 # Dictator / FieldFlow
 
-Android-first, voice-centric note capture application. The current implementation combines a floating recording overlay, local audio capture, an offline transcription pipeline, a Compose note editor, on-device text transformation, Android AppFunctions, and document export.
+Android-first, voice-centric note capture application. The current implementation combines a floating recording overlay, local audio capture, a transcription pipeline designed for on-device inference (currently stub-capable), a Compose note editor, on-device text transformation, Android AppFunctions, and document export.
 
 > **Engineering status:** This repository is an active implementation, not yet a production-readiness declaration. Some paths are implemented but depend on external model assets or native libraries; others need device-level validation. See [Implementation Status](docs/IMPLEMENTATION_STATUS.md) before treating a capability as release-ready.
 
