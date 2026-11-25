@@ -1,54 +1,27 @@
-import java.util.Properties
-import java.io.FileInputStream
-
 plugins {
-    id("com.android.application")
-    id("org.jetbrains.kotlin.android")
-}
-
-val keystorePropertiesFile = rootProject.file("keystore.properties")
-val keystoreProperties = Properties()
-if (keystorePropertiesFile.exists()) {
-    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.hilt.android)
+    alias(libs.plugins.ksp)
 }
 
 android {
-    namespace = "com.dictator.app"
-    compileSdk = 34
+    namespace = "com.fieldflow"
+    compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.dictator.app"
-        minSdk = 26
-        targetSdk = 34
-        versionCode = 2
-        versionName = "1.0.1"
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        applicationId = "com.fieldflow"
+        minSdk = 30
+        targetSdk = 35
+        versionCode = 1
+        versionName = "1.0.0-v1"
     }
 
-    signingConfigs {
-        create("release") {
-            if (keystorePropertiesFile.exists()) {
-                storeFile = file(keystoreProperties.getProperty("storeFile"))
-                storePassword = keystoreProperties.getProperty("storePassword")
-                keyAlias = keystoreProperties.getProperty("keyAlias")
-                keyPassword = keystoreProperties.getProperty("keyPassword")
-                enableV1Signing = true
-                enableV2Signing = true
-                enableV3Signing = true
-            }
-        }
+    buildFeatures {
+        compose = true
     }
 
-    buildTypes {
-        release {
-            isMinifyEnabled = false
-            signingConfig = signingConfigs.getByName("release")
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
-        }
-    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -56,32 +29,29 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
-    buildFeatures {
-        viewBinding = true
-    }
-    lint {
-        checkReleaseBuilds = false
-        abortOnError = false
-    }
-    applicationVariants.all {
-        outputs.all {
-            val output = this as? com.android.build.gradle.internal.api.BaseVariantOutputImpl
-            if (buildType.name == "release") {
-                output?.outputFileName = "dictator_release.apk"
-            } else if (buildType.name == "debug") {
-                output?.outputFileName = "dictator_debug.apk"
-            }
-        }
-    }
 }
 
 dependencies {
-    implementation("androidx.core:core-ktx:1.12.0")
-    implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("com.google.android.material:material:1.11.0")
-    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
-    implementation("androidx.lifecycle:lifecycle-service:2.7.0")
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    compileOnly(files("/home/machinerg/Android/Sdk/platforms/android-36.1/android.jar"))
+    implementation(project(":core:overlay"))
+    implementation(project(":core:audio"))
+    implementation(project(":core:stt"))
+    implementation(project(":core:watcher"))
+    implementation(project(":core:data"))
+    implementation(project(":core:transform"))
+    implementation(project(":core:appfunctions"))
+    implementation(project(":core:export"))
+
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.activity.compose)
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.ui)
+    implementation(libs.androidx.ui.tooling.preview)
+    implementation(libs.androidx.material3)
+    implementation(libs.androidx.material.icons.extended)
+
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
 }

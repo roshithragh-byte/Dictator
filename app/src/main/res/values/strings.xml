@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Dictator</string>
-    <string name="accessibility_service_description">Dictator uses Accessibility Services solely to detect when you scroll through short-form video feeds (Reels, Shorts, Spotlight) in order to display your live watch tally on your screen. No video content, keystrokes, or private data are ever recorded or transmitted.</string>
+    <string name="overlay_tile_label">Dictator Mic</string>
 </resources>

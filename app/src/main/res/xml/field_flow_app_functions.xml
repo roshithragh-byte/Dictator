@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<appfunctions>
+    <appfunction>
+        <id>com.fieldflow.appfunctions.BaseFieldFlowAppFunctionService#searchVoiceNotes</id>
+        <enabledByDefault>true</enabledByDefault>
+        <description>Searches recorded FieldFlow voice notes and transcripts by keyword.</description>
+        <parameters>
+            <dataTypeMetadata>
+                <id>unused</id>
+                <isNullable>false</isNullable>
+                <type>8</type>
+            </dataTypeMetadata>
+            <id>unused</id>
+            <isRequired>true</isRequired>
+            <name>query</name>
+            <description>Non-empty keyword, character name, part number, or phrase to search for.</description>
+        </parameters>
+        <response>
+            <id>unused</id>
+            <valueType>
+                <id>unused</id>
+                <isNullable>false</isNullable>
+                <itemType>
+                    <dataTypeReference>com.fieldflow.appfunctions.VoiceNoteSummary</dataTypeReference>
+                    <id>unused</id>
+                    <isNullable>false</isNullable>
+                    <type>11</type>
+                </itemType>
+                <type>10</type>
+            </valueType>
+        </response>
+        <functionId>com.fieldflow.appfunctions.BaseFieldFlowAppFunctionService#searchVoiceNotes</functionId>
+    </appfunction>
+    <appfunction>
+        <id>com.fieldflow.appfunctions.BaseFieldFlowAppFunctionService#getLatestNote</id>
+        <enabledByDefault>true</enabledByDefault>
+        <description>Returns the most recently recorded and transcribed FieldFlow voice note.</description>
+        <response>
+            <id>unused</id>
+            <valueType>
+                <dataTypeReference>com.fieldflow.appfunctions.VoiceNoteSummary</dataTypeReference>
+                <id>unused</id>
+                <isNullable>false</isNullable>
+                <type>11</type>
+            </valueType>
+        </response>
+        <functionId>com.fieldflow.appfunctions.BaseFieldFlowAppFunctionService#getLatestNote</functionId>
+    </appfunction>
+</appfunctions>
